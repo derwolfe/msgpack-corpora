@@ -1,5 +1,7 @@
 import datetime
 
+from struct import pack
+
 import msgpack
 
 
@@ -26,12 +28,20 @@ samples = [
     1.22345,
 ]
 
+
 def main():
     for i, s in enumerate(samples):
         packed = msgpack.packb(s)
         redone = msgpack.unpackb(packed, raw=False)
         with open('./unpack/{}'.format(i), 'wb') as f:
             f.write(packed)
+
+    # the first byte is a byte in range
+    idx = len(samples)
+    for i in range(256):
+        idx = len(samples) + i
+        with open('./unpack/{}'.format(idx), 'wb') as f:
+            f.write(pack("<I", *bytearray([i])))
 
 if __name__ == '__main__':
     main()
