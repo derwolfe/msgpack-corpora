@@ -30,7 +30,7 @@ def main():
     for i, s in enumerate(samples):
         packed = msgpack.packb(s)
         redone = msgpack.unpackb(packed, raw=False)
-        with open('./unpackm/{}'.format(i), 'wb') as f:
+        with open('./unpack/{}'.format(i), 'wb') as f:
             f.write(packed)
 
 if __name__ == '__main__':
