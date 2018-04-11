@@ -1,47 +1,29 @@
 import datetime
+import json
+
+from os import listdir
+from os.path import isfile, join
 
 from struct import pack
 
 import msgpack
 
-
-def encode_datetime(obj):
-    if isinstance(obj, datetime.datetime):
-        return {'__datetime__': True, 'as_str': obj.strftime("%Y%m%dT%H:%M:%S.%f")}
-    return obj
-
-samples = [
-    [1, 2, 3],
-    None,
-    5,
-    10,
-    {'a': 'b'},
-    {'a': {'b': {'c': 'd'}}},
-    {'data': b'just a bit of binary'},
-    {'data': u'unicode specific'},
-    {'when': encode_datetime(datetime.datetime.now())},
-    True,
-    False,
-    {},
-    (),
-    [],
-    1.22345,
-]
-
+# download a json corpus and convert it to msgpack
 
 def main():
-    for i, s in enumerate(samples):
-        packed = msgpack.packb(s)
-        redone = msgpack.unpackb(packed, raw=False)
-        with open('./unpack/{}'.format(i), 'wb') as f:
-            f.write(packed)
-
-    # the first byte is a byte in range
-    idx = len(samples)
-    for i in range(256):
-        idx = len(samples) + i
-        with open('./unpack/{}'.format(idx), 'wb') as f:
-            f.write(pack("<I", *bytearray([i])))
+    mypath = './seed_corpus'
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    for fname in onlyfiles:
+        full = '{}/{}'.format(mypath, fname)
+        print(full)
+        try:
+            with open(full, 'rb') as fin:
+                old = json.loads(fin.read())
+        except:
+            continue
+        newname = fname.split(".")[0] + '.mpk'
+        with open('./unpack/{}'.format(newname), 'wb') as fout:
+            fout.write(msgpack.packb(old, use_bin_type=True))
 
 if __name__ == '__main__':
     main()
