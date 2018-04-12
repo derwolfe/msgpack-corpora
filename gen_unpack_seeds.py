@@ -22,7 +22,7 @@ def main():
         except:
             continue
         newname = fname.split(".")[0] + '.mpk'
-        with open('./unpack/{}'.format(newname), 'wb') as fout:
+        with open('./packed/{}'.format(newname), 'wb') as fout:
             fout.write(msgpack.packb(old, use_bin_type=True))
 
 if __name__ == '__main__':
